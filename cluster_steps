@@ -1,0 +1,55 @@
+
+eksctl create cluster --name=kovaion \
+                      --region=ap-south-1 \
+                      --zones=ap-south-1a,ap-south-1b
+
+eksctl utils associate-iam-oidc-provider \
+    --region ap-south-1 \
+    --cluster kovaion \
+    --approve
+
+# Create Public Node Group   
+eksctl create nodegroup --cluster=kovaion \
+                       --region=ap-south-1 \
+                       --name=kovaion-ng \
+                       --node-type=t3.medium \
+                       --nodes=2 \
+                       --node-volume-size=30 \
+                       --ssh-access \
+                       --ssh-public-key=jenkins_ipa \
+                       --managed \
+                       --asg-access \
+                       --external-dns-access \
+                       --full-ecr-access \
+                       --appmesh-access \
+                       --alb-ingress-access
+
+ eksctl delete nodegroup --name=kovaion-ng \
+                         --cluster=kovaion
+
+
+This is to update node and nodegroup
+eksctl create nodegroup --cluster=kovaion \
+                        --region=ap-south-1 \
+                        --name=new-kovaion-ng \
+                        --node-type=t3.large \
+                        --nodes=2 \
+                        --node-volume-size=30
+
+This is to remove old node from the nodegroup and make pods from old node to join the new node
+kubectl drain --ignore-daemonsets (NAME OF THE NODE)
+
+ kubectl get all -n kube-system
+   27  kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=master"
+   28  kubectl get pods -n kube-system
+
+
+Debug
+Kubectl not working
+ kubectl config view
+aws eks update-kubeconfig --name kovaion --region ap-south-1
+ kubectl config view
+kubectl cluster-info
+output
+Kubernetes control plane is running at https://30FE708366413B7484049E4065BA7E1E.gr7.ap-south-1.eks.amazonaws.com
+CoreDNS is running at https://30FE708366413B7484049E4065BA7E1E.gr7.ap-south-1.eks.amazonaws.com/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
