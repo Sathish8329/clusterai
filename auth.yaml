@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: auth-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: auth
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: auth
-        image: sathish8329/auth:d1
+        image: sathish8329/dev_auth:v2
         ports:
         - containerPort: 8080
 ---
@@ -32,4 +32,3 @@ spec:
       port: 8080
       targetPort: 8080
   type: NodePort
-
