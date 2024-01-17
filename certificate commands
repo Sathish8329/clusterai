@@ -1,0 +1,5 @@
+openssl
+  openssl genpkey -algorithm RSA -out private.key
+   openssl req -new -key private.key -out csr.pem -subj "/CN=*.kovaion.ai"
+   openssl x509 -req -in csr.pem -signkey private.key -out kovaion_ai.crt
+  kubectl create secret tls kovaion-tls-secret   --cert=kovaion_ai.crt   --key=private.key
